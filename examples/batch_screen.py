@@ -6,12 +6,16 @@ Usage:  python examples/batch_screen.py  --n 10
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from transformers import pipeline
+from transformers import pipeline, AutoModelForMaskedLM, AutoTokenizer
 from protein_mc.core.monte_carlo import MonteCarlo
 
 def worker(seed: int, steps: int, wt: str, beta: float):
-    pipe = pipeline("feature-extraction",
-                    model="facebook/esm2_t6_8M_UR50D", device="cpu")
+    # Fixed model loading approach to avoid meta tensor issue
+    model_name = "facebook/esm2_t6_8M_UR50D"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForMaskedLM.from_pretrained(model_name)
+    pipe = pipeline("feature-extraction", model=model, tokenizer=tokenizer, device="cpu")
+    
     mc = MonteCarlo(pipe, beta=beta)
     res = mc.run(wt, num_steps=steps)
     best = min(res.delta_E_history)
