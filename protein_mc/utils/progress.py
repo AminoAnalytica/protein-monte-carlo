@@ -35,10 +35,19 @@ class ProgressBar:
         self._bar.update(1)
 
         if (step + 1) % self.status_frequency == 0 or step + 1 == self._bar.total:
-            elapsed = self._bar.format_interval(self._bar.format_dict["elapsed"])
-            remaining = self._bar.format_interval(
-                self._bar.format_dict["remaining"]
-            )
+            fd = self._bar.format_dict
+            # Safely grab elapsed/remaining, defaulting to 0 if missing
+            elapsed_secs = fd.get("elapsed", 0)
+            remaining_secs = fd.get("remaining", 0)
+            try:
+                elapsed = self._bar.format_interval(elapsed_secs)
+            except Exception:
+                elapsed = str(elapsed_secs)
+            try:
+                remaining = self._bar.format_interval(remaining_secs)
+            except Exception:
+                remaining = str(remaining_secs)
+            
             self._bar.write(
                 f"step {step+1:>4d} | ΔE={delta_E:+.5f} | "
                 f"{'✓' if accepted else '✗'} p={acceptance_prob:.3f} | "

@@ -1,0 +1,7 @@
+model:
+  device: "cpu"
+
+sim:
+  sequence_file: "data/demo_sequences.csv"
+  num_steps: 30
+  beta: 0.7
