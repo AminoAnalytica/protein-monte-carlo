@@ -8,12 +8,16 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from transformers import logging as hf_logging
+
+hf_logging.set_verbosity_error()
 
 from ..core.monte_carlo import MonteCarlo
 from ..io.config import load_config
 from ..io.loaders import get_sequence_from_file
 from ..models.esm_wrapper import load_esm_pipeline
 from ..utils.progress import ProgressBar
+from ..core.sequence_ops import hamming_distance
 
 
 # ------------------------------------------------------------------ #
@@ -32,7 +36,7 @@ def main():
 
     seq = get_sequence_from_file(cfg.sim.sequence_file, cfg.sim.sequence_index)
 
-    bar = ProgressBar(cfg.sim.num_steps, cfg.sim.status_frequency)
+    bar = ProgressBar(cfg.sim.num_steps, seq, cfg.sim.status_frequency)
 
     def cb(step, state, energy_res):
         bar.update(
@@ -57,7 +61,29 @@ def main():
         out.parent.mkdir(parents=True, exist_ok=True)
         import pandas as pd
 
-        df = pd.DataFrame({"delta_E": result.delta_E_history})
+        df = pd.DataFrame(
+            {
+                "step": range(1, len(result.delta_E_history) + 1),
+                "delta_E": result.delta_E_history,
+                "accepted": result.accepted_mutations,
+                "sequence": result.mutation_details_history,  # details already has "X->Y" info
+            }
+        )
+
+        # append live sequence each step
+        seq_col = []
+        seq = result.initial_sequence
+        for acc, det in zip(result.accepted_mutations, result.mutation_details_history):
+            if acc:
+                pos = result.mutation_position_history[len(seq_col)] - 1
+                aa_to = det[-1]  # "...->Y"
+                seq = seq[:pos] + aa_to + seq[pos + 1 :]
+            seq_col.append(seq)
+        df["current_sequence"] = seq_col
+        df["hamming"] = [
+            hamming_distance(result.initial_sequence, s) for s in seq_col
+        ]
+
         df.to_csv(out, index=False)
         print(f"Saved ΔE series to {out.absolute()}")
 

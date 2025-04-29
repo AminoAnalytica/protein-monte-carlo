@@ -7,6 +7,7 @@ from datetime import timedelta
 from typing import Optional
 
 from tqdm.auto import tqdm
+from ..core.sequence_ops import hamming_distance as fdistance
 
 
 class ProgressBar:
@@ -15,13 +16,14 @@ class ProgressBar:
     *status_frequency* steps.
     """
 
-    def __init__(self, total: int, status_frequency: int = 10):
+    def __init__(self, total: int, start_seq: str, status_frequency: int = 10):
         self._bar = tqdm(
             total=total,
             bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
         )
         self.status_frequency = status_frequency
         self.start_time = self._bar.start_t
+        self.start_seq = start_seq
 
     # ------------------------------------------------------------------ #
     def update(
@@ -48,9 +50,13 @@ class ProgressBar:
             except Exception:
                 remaining = str(remaining_secs)
             
+            hamming_distance = fdistance(self.start_seq, sequence)
+            
             self._bar.write(
                 f"step {step+1:>4d} | ΔE={delta_E:+.5f} | "
                 f"{'✓' if accepted else '✗'} p={acceptance_prob:.3f} | "
+                f"hamming={hamming_distance} | "
+                f"seq={sequence[:20]}… | "
                 f"{elapsed} elapsed, {remaining} left"
             )
 
