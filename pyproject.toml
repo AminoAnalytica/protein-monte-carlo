@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protein-mc"
+version = "0.1.0"
+description = "Minimal Monte-Carlo optimiser for protein sequence design (publication build)."
+authors = [
+  { name = "Your Lab Name", email = "info@yourlab.org" },
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+  "torch>=2.2",           # CPU build is fine for reviewers
+  "transformers>=4.41",
+  "tqdm>=4.66",
+  "pandas>=2.2",
+  "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2",
+  "pytest-cov>=5.0",
+  "black>=24.4",
+  "ruff>=0.4",
+  "pyyaml>=6.0",          # only needed if users want YAML configs
+]
+
+[project.urls]
+Homepage = "https://github.com/your-org/protein-mc"
+Issues   = "https://github.com/your-org/protein-mc/issues"
+
+[project.scripts]
+protein-mc-run = "protein_mc.cli.run_simulation:main"
+
+[tool.setuptools]
+packages = ["protein_mc"]
+
+[tool.setuptools.package-data]
+"protein_mc" = ["../data/*.csv"]      # include demo_sequences.csv for examples
