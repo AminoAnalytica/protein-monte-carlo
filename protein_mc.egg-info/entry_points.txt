@@ -1,2 +1,0 @@
-[console_scripts]
-protein-mc-run = protein_mc.cli.run_simulation:main
