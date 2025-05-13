@@ -78,6 +78,8 @@ step   10 | ΔE=+0.00360 | ✓ p=0.997 | hamming=8 | seq=MKSQYIAKQRQISMIKSHCS…
 
 Everything is pure‑Python; no custom CUDA kernels.
 
+![flowchart](https://github.com/user-attachments/assets/b29718bc-a15d-45d7-bc93-2787236070db)
+
 ---
 
 ## Cite
