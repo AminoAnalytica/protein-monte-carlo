@@ -4,7 +4,7 @@ Minimal Metropolis Monte‑Carlo optimiser for **protein sequence design** (publ
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### 1. Quick test (install directly from GitHub)
 
@@ -26,7 +26,7 @@ pip install -e ".[dev]"   # installs with dev extras from pyproject.toml
 
 ---
 
-## ⚡ Quickstart
+## Quickstart
 
 1. **Grab a config** (YAML or JSON). Save the snippet below as `example_config.yml`:
 
@@ -66,7 +66,7 @@ step   10 | ΔE=+0.00360 | ✓ p=0.997 | hamming=8 | seq=MKSQYIAKQRQISMIKSHCS…
 
 ---
 
-## 🧠 How it works (30‑second tour)
+## How it works
 
 | component            | role                                                      |
 | -------------------- | --------------------------------------------------------- |
