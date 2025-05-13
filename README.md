@@ -80,13 +80,13 @@ Everything is pure‑Python; no custom CUDA kernels.
 
 ---
 
-## 📄 Cite
+## Cite
 
-> **Rajendran A.** *Protein‑MC: Minimal Monte‑Carlo optimiser for protein sequence design*. **bioRxiv** (2025). DOI: *coming soon*
+> *Protein‑MC: Minimal Monte‑Carlo optimiser for protein sequence design*. **bioRxiv** (2025). DOI: *coming soon*
 > Software release v0.1.0 (Zenodo): DOI *coming soon*
 
 ---
 
-## 🪪 License
+## License
 
 MIT — fork it, cite it, improve it.
