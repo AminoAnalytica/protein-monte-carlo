@@ -70,6 +70,12 @@ step   10 | ΔE=+0.00360 | ✓ p=0.997 | hamming=8 | seq=MKSQYIAKQRQISMIKSHCS…
 
 ![flowchart](https://github.com/user-attachments/assets/b29718bc-a15d-45d7-bc93-2787236070db)
 
+**Flow chart summarising our generative algorithm.**  
+Starting from a reference enzyme, a mutation is made. The change in the embedding vector compared to the reference enzyme for the subset of residues {X} whose environment we want to maintain is calculated, as quantified by the cosine similarity. This change is used as the effective energy driving a standard Metropolis Monte Carlo sampling algorithm to accept or reject the mutation, following Eq.1.
+
+The well-known mathematical properties of this type of algorithm guarantee that the equilibrium distribution of sequences generated spans all the possible mutants within a certain energy from the original one. Correspondingly, when the connection between a residue’s embedding vector and its environment holds, such a procedure generates mutants that preserve the local structure around such a site. If the choice of {X} carefully includes all residues in the catalytic site, this process translates to the generation of mutants preserving catalytic activity.
+
+
 | component            | role                                                      |
 | -------------------- | --------------------------------------------------------- |
 | `models.esm_wrapper` | Loads an ESM2‑T6 (8 M) HF **feature‑extraction** pipeline |
