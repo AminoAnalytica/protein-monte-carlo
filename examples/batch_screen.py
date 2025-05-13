@@ -28,9 +28,9 @@ def main():
     p.add_argument("--beta", type=float, default=0.5)
     args = p.parse_args()
 
-    wt = "M" * 40
+    wild_type = "M" * 40
     with ThreadPoolExecutor() as ex:
-        futs = [ex.submit(worker, i, args.steps, wt, args.beta)
+        futs = [ex.submit(worker, i, args.steps, wild_type, args.beta)
                 for i in range(args.n)]
         for fut in as_completed(futs):
             seed, best, seq = fut.result()

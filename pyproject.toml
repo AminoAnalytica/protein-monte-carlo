@@ -5,16 +5,16 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "protein-mc"
 version = "0.1.0"
-description = "Minimal Monte-Carlo optimiser for protein sequence design (publication build)."
+description = "Minimal Monte Carlo optimizer for protein sequence design using ESM embeddings."
 authors = [
-  { name = "Your Lab Name", email = "info@yourlab.org" },
+  { name = "AminoAnalytica", email = "info@aminoanalytica.com" },
 ]
 license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.9"
 
 dependencies = [
-  "torch>=2.2",           # CPU build is fine for reviewers
+  "torch>=2.2",
   "transformers>=4.41",
   "tqdm>=4.66",
   "pandas>=2.2",
@@ -27,12 +27,12 @@ dev = [
   "pytest-cov>=5.0",
   "black>=24.4",
   "ruff>=0.4",
-  "pyyaml>=6.0",          # only needed if users want YAML configs
+  "pyyaml>=6.0",  # Enables YAML config support
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/protein-mc"
-Issues   = "https://github.com/your-org/protein-mc/issues"
+Homepage = "https://github.com/AminoAnalytica/protein-monte-carlo"
+Repository = "https://github.com/AminoAnalytica/protein-monte-carlo"
 
 [project.scripts]
 protein-mc-run = "protein_mc.cli.run_simulation:main"
@@ -41,4 +41,4 @@ protein-mc-run = "protein_mc.cli.run_simulation:main"
 packages = ["protein_mc"]
 
 [tool.setuptools.package-data]
-"protein_mc" = ["../data/*.csv"]      # include demo_sequences.csv for examples
+"protein_mc" = ["../data/demo_sequences.csv"]

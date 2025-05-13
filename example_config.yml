@@ -1,5 +1,5 @@
 model:
-  device: "cuda:0"
+  device: "cpu"
 
 sim:
   sequence_file: "data/demo_sequences.csv"

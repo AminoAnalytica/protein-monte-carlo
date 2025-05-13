@@ -9,6 +9,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 from transformers import logging as hf_logging
+import warnings
+
+warnings.filterwarnings("ignore", message="Failed to load image Python extension*")
 
 hf_logging.set_verbosity_error()
 
