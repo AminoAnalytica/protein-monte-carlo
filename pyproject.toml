@@ -38,7 +38,9 @@ Repository = "https://github.com/AminoAnalytica/protein-monte-carlo"
 protein-mc-run = "protein_mc.cli.run_simulation:main"
 
 [tool.setuptools]
-packages = ["protein_mc"]
+# Automatically discover all sub-packages inside the source tree so that
+# modules like `protein_mc.core` are included in the built wheel.
+packages = { find = { include = ["protein_mc*"] } }
 
 [tool.setuptools.package-data]
 "protein_mc" = ["../data/demo_sequences.csv"]
