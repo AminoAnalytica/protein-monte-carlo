@@ -3,5 +3,6 @@ model:
 
 sim:
   sequence_file: "data/demo_sequences.csv"
-  num_steps: 30
-  beta: 0.7
+  num_steps: 100
+  beta: 1000
+  status_frequency: 1

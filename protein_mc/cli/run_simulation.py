@@ -39,23 +39,17 @@ def main():
 
     seq = get_sequence_from_file(cfg.sim.sequence_file, cfg.sim.sequence_index)
 
-    bar = ProgressBar(cfg.sim.num_steps, seq, cfg.sim.status_frequency)
-
-    def cb(step, state, energy_res):
-        bar.update(
-            step,
-            delta_E=energy_res.delta_E,
-            accepted=state.accepted_mutations[-1],
-            acceptance_prob=state.acceptance_probability_history[-1],
-            sequence=state.sequence,
-        )
+    # Create progress bar with status frequency from config or default to 10
+    status_frequency = getattr(cfg.sim, 'status_frequency', 10)
+    bar = ProgressBar(cfg.sim.num_steps, seq, status_frequency)
 
     result = mc.run(
         seq,
         num_steps=cfg.sim.num_steps,
         protected_positions=cfg.sim.protected_positions,
-        callback=cb,
+        progress_callback=bar.update,  # Pass the progress callback
     )
+
     bar.close()
 
     # save results if requested
@@ -64,28 +58,23 @@ def main():
         out.parent.mkdir(parents=True, exist_ok=True)
         import pandas as pd
 
-        df = pd.DataFrame(
-            {
-                "step": range(1, len(result.delta_E_history) + 1),
-                "delta_E": result.delta_E_history,
-                "accepted": result.accepted_mutations,
-                "sequence": result.mutation_details_history,  # details already has "X->Y" info
-            }
-        )
+        # Create DataFrame with consistent lengths
+        df = pd.DataFrame({
+            "step": range(len(result.sequence_history)),  # Start from 0 to match sequence history
+            "delta_E": [0.0] + result.delta_E_history,  # Add initial energy difference of 0
+            "acceptance_prob": [1.0] + result.acceptance_probability_history,  # Add initial acceptance prob of 1
+        })
 
-        # append live sequence each step
-        seq_col = []
-        seq = result.initial_sequence
-        for acc, det in zip(result.accepted_mutations, result.mutation_details_history):
-            if acc:
-                pos = result.mutation_position_history[len(seq_col)] - 1
-                aa_to = det[-1]  # "...->Y"
-                seq = seq[:pos] + aa_to + seq[pos + 1 :]
-            seq_col.append(seq)
-        df["current_sequence"] = seq_col
-        df["hamming"] = [
-            hamming_distance(result.initial_sequence, s) for s in seq_col
-        ]
+        # Add accepted mutations as a boolean column
+        accepted = [True] + [False] * len(result.delta_E_history)  # Start with True for initial sequence
+        for step, _ in result.accepted_mutations:
+            if step < len(accepted):
+                accepted[step + 1] = True  # +1 because we added initial sequence
+        df["accepted"] = accepted
+
+        # Add sequence information using sequence history
+        df["sequence"] = result.sequence_history
+        df["hamming"] = [hamming_distance(result.initial_sequence, seq) for seq in result.sequence_history]
 
         df.to_csv(out, index=False)
         print(f"Saved ΔE series to {out.absolute()}")

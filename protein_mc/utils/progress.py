@@ -24,6 +24,11 @@ class ProgressBar:
         self.status_frequency = status_frequency
         self.start_time = self._bar.start_t
         self.start_seq = start_seq
+        self.prev_seq = start_seq  # Track previous sequence
+        # ANSI color codes
+        self.GREEN = '\033[92m'
+        self.RED = '\033[91m'
+        self.RESET = '\033[0m'
 
     # ------------------------------------------------------------------ #
     def update(
@@ -35,6 +40,16 @@ class ProgressBar:
         sequence: str,
     ):
         self._bar.update(1)
+
+        # Find current mutation
+        mutation_str = ""
+        if step > 0 and sequence != self.prev_seq:
+            for i, (a, b) in enumerate(zip(self.prev_seq, sequence)):
+                if a != b:
+                    color = self.GREEN if accepted else self.RED
+                    mutation_str = f" | {color}{a}{i+1}{b}{self.RESET}"
+                    break
+        self.prev_seq = sequence
 
         if (step + 1) % self.status_frequency == 0 or step + 1 == self._bar.total:
             fd = self._bar.format_dict
@@ -52,12 +67,16 @@ class ProgressBar:
             
             hamming_distance = fdistance(self.start_seq, sequence)
             
+            # Format energy difference with color based on sign
+            energy_color = self.GREEN if delta_E < 0 else self.RED
+            energy_str = f"{energy_color}{delta_E:+.5f}{self.RESET}"
+            
             self._bar.write(
-                f"step {step+1:>4d} | ΔE={delta_E:+.5f} | "
-                f"{'✓' if accepted else '✗'} p={acceptance_prob:.3f} | "
-                f"hamming={hamming_distance} | "
-                f"seq={sequence[:20]}… | "
-                f"{elapsed} elapsed, {remaining} left"
+                f"step {step+1:>4d} | ΔE={energy_str} | "
+                f"{self.GREEN if accepted else self.RED}{'✓' if accepted else '✗'}{self.RESET} "
+                f"p={acceptance_prob:.3f} | "
+                f"hamming={hamming_distance}"
+                f"{mutation_str}"
             )
 
     # ------------------------------------------------------------------ #

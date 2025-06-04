@@ -24,7 +24,7 @@ def get_embeddings(sequence: str, hf_pipeline) -> torch.Tensor:
         return _embedding_cache[sequence]
 
     emb = hf_pipeline(sequence)
-    emb_t = torch.tensor(emb[0])  # [L, D]
+    emb_t = torch.tensor(emb[0])[1:-1]  # [L, D]
     _embedding_cache[sequence] = emb_t
     return emb_t
 

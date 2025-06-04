@@ -15,13 +15,13 @@ class EnergyResult:
 
 class EnergyCalculator:
     """
-    ΔE = α · (E_mut − E_prev)
+    ΔE = E_mut − E_prev
     where
         E = 1 − mean(dot(emb_ref, emb_seq))
     """
 
-    def __init__(self, alpha: float = 1.0):
-        self.alpha = float(alpha)
+    def __init__(self):
+        pass
 
     # ---------- public --------------------------------------------------
 
@@ -50,14 +50,13 @@ class EnergyCalculator:
         mut_norm = self._normalize_rows(mut_emb)
         ref_norm = self._normalize_rows(ref_emb)
 
-        # if any positions are protected, EXCLUDE them
+        # if any positions are protected, use ONLY those positions
         if protected_positions:
-            # convert 1-based to 0-based indices to drop
-            drop = {p - 1 for p in protected_positions}
-            keep_idx = [i for i in range(prev_norm.size(0)) if i not in drop]
-            prev_norm = prev_norm[keep_idx]
-            mut_norm = mut_norm[keep_idx]
-            ref_norm = ref_norm[keep_idx]
+            # convert 1-based to 0-based indices
+            indices = [pos - 1 for pos in protected_positions]
+            prev_norm = prev_norm[indices]
+            mut_norm = mut_norm[indices]
+            ref_norm = ref_norm[indices]
 
         # compute energies
         dot_prev = (prev_norm * ref_norm).sum(dim=1).mean().item()
@@ -65,13 +64,21 @@ class EnergyCalculator:
         E_prev = 1.0 - dot_prev
         E_mut = 1.0 - dot_mut
 
-        delta_E = self.alpha * (E_mut - E_prev)
+        # Calculate raw energy difference without alpha scaling
+        delta_E = E_mut - E_prev
+
         return EnergyResult(
             delta_E=delta_E,
             E_mut=E_mut,
-            structural_component=delta_E,
+            structural_component=delta_E
         )
 
     @staticmethod
     def _normalize_rows(emb: torch.Tensor) -> torch.Tensor:
-        return emb / (emb.norm(p=2, dim=1, keepdim=True) + 1e-8)
+        """
+        Row-wise L2-normalization of a [N x D] embedding tensor.
+        Asserts that no row has zero norm.
+        """
+        norms = torch.norm(emb, p=2, dim=1, keepdim=True)
+        assert torch.all(norms != 0), "Zero norm encountered in embedding row(s). Cannot normalize."
+        return emb / norms
