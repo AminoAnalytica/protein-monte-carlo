@@ -91,8 +91,20 @@ Everything is pure‑Python; no custom CUDA kernels.
 
 ## Cite
 
-> *Protein‑MC: Minimal Monte‑Carlo optimiser for protein sequence design*. **bioRxiv** (2025). DOI: *coming soon*
-> Software release v0.1.0 (Zenodo): DOI *coming soon*
+Mind the Gap: An Embedding Guide to Safely Travel in Sequence Space. bioRxiv (2025). DOI: 10.1101/2025.06.19.660524
+```
+@article{Wu2025,
+	author = {Wu, Adam and Trolliet, Quentin and Rajendran, Abhinav and L{\'a}la, Jakub and Angioletti-Uberti, Stefano},
+	title = {Mind the Gap: An Embedding Guide to Safely Travel in Sequence Space},
+	elocation-id = {2025.06.19.660524},
+	year = {2025},
+	doi = {10.1101/2025.06.19.660524},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/10.1101/2025.06.19.660524v1},
+	journal = {bioRxiv}
+}
+```
+Software release v0.1.0 (Zenodo): DOI *coming soon*
 
 ---
 
