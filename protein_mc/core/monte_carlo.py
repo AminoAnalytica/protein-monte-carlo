@@ -30,6 +30,7 @@ class MonteCarloState:
     accepted_mutations: List[tuple]
     initial_sequence: str  # Add to track original sequence
     sequence_history: List[str] = dataclasses.field(default_factory=list)  # Track sequence changes
+    E_mut_history: List[float] = dataclasses.field(default_factory=list)  # Track absolute energy values
 
     @property
     def steps(self) -> int:
@@ -68,6 +69,7 @@ class MonteCarlo:
             accepted_mutations=[],
             initial_sequence=sequence,  # Store initial sequence
             sequence_history=[sequence],  # Initialize with initial sequence
+            E_mut_history=[],  # Initialize E_mut history
         )
 
         # Get initial embeddings
@@ -79,6 +81,7 @@ class MonteCarlo:
             prev_embedding, prev_embedding, ref_embedding, protected_positions
         )
         state.energy = energy_res.E_mut  # Store absolute energy
+        state.E_mut_history.append(energy_res.E_mut)  # Record initial absolute energy
 
         # Report initial state
         if progress_callback:
@@ -120,6 +123,7 @@ class MonteCarlo:
             # Record history
             state.delta_E_history.append(energy_res.delta_E)
             state.acceptance_probability_history.append(p)
+            state.E_mut_history.append(energy_res.E_mut)  # Record absolute energy for proposed mutation
 
             # Update previous embedding
             prev_embedding = mut_embedding if accept else prev_embedding

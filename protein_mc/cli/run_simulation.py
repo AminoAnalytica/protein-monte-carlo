@@ -62,6 +62,7 @@ def main():
         df = pd.DataFrame({
             "step": range(len(result.sequence_history)),  # Start from 0 to match sequence history
             "delta_E": [0.0] + result.delta_E_history,  # Add initial energy difference of 0
+            "E_mut": result.E_mut_history,  # Include absolute energy values
             "acceptance_prob": [1.0] + result.acceptance_probability_history,  # Add initial acceptance prob of 1
         })
 
@@ -77,7 +78,7 @@ def main():
         df["hamming"] = [hamming_distance(result.initial_sequence, seq) for seq in result.sequence_history]
 
         df.to_csv(out, index=False)
-        print(f"Saved ΔE series to {out.absolute()}")
+        print(f"Saved ΔE and E_mut series to {out.absolute()}")
 
 
 # ------------------------------------------------------------------ #
